@@ -57,10 +57,16 @@
                     </GroupBox>
                     <Grid Grid.Column="2" Grid.RowSpan="2"/>
                     <GroupBox Grid.Column="1" Header="Source" Grid.RowSpan="2" Margin="0,0,6,0" BorderThickness="0,0,0,0">
-                        <RichTextBox x:Name="inputBox" VerticalScrollBarVisibility="Auto" FontSize="20" MouseWheel="RichTextBox_MouseWheel" FontFamily="Cambria" Background="White" BorderThickness="0,0,0,0" TextChanged="inputBox_TextChanged" AutoWordSelection="False">
+                        <RichTextBox x:Name="inputBox" VerticalScrollBarVisibility="Auto" FontSize="20" FontFamily="Cambria" Background="White" BorderThickness="0,0,0,0" TextChanged="inputBox_TextChanged" AutoWordSelection="False" PreviewKeyDown="inputBox_PreviewKeyDown" PreviewMouseWheel="RichTextBox_PreviewMouseWheel">
                             <RichTextBox.Resources>
                                 <Style TargetType="{x:Type Paragraph}">
                                     <Setter Property="Margin" Value="0"/>
+                                </Style>
+                                <Style TargetType="{x:Type Border}">
+                                    <Setter Property="CornerRadius" Value="5"/>
+                                </Style>
+                                <Style TargetType="{x:Type FlowDocumentScrollViewer}">
+                                    <Setter Property="Zoom"  Value="10"/>
                                 </Style>
                             </RichTextBox.Resources>
                             <RichTextBox.LayoutTransform>
@@ -70,10 +76,13 @@
                     </GroupBox>
                     <GridSplitter Margin="0,10,1,0" Width="5" Grid.Column="1" Grid.RowSpan="2" Background="#02F0F0F0"/>
                     <GroupBox Grid.Column="2" Header="Questions" BorderThickness="0,0,0,0">
-                        <RichTextBox x:Name="questionBox" VerticalScrollBarVisibility="Auto" FontSize="20" MouseWheel="RichTextBox_MouseWheel" FontFamily="Cambria" Background="White" BorderThickness="0,0,0,0">
+                        <RichTextBox x:Name="questionBox" VerticalScrollBarVisibility="Auto" FontSize="20" PreviewMouseWheel="RichTextBox_PreviewMouseWheel" FontFamily="Cambria" Background="White" BorderThickness="0,0,0,0">
                             <RichTextBox.Resources>
                                 <Style TargetType="{x:Type Paragraph}">
                                     <Setter Property="Margin" Value="0"/>
+                                </Style>
+                                <Style TargetType="{x:Type Border}">
+                                    <Setter Property="CornerRadius" Value="5"/>
                                 </Style>
                             </RichTextBox.Resources>
                             <RichTextBox.LayoutTransform>
@@ -82,10 +91,13 @@
                         </RichTextBox>
                     </GroupBox>
                     <GroupBox Grid.Column="2" Header="Answers" Grid.Row="1" BorderThickness="0,0,0,0">
-                        <RichTextBox x:Name="answersBox" VerticalScrollBarVisibility="Auto" FontSize="20" MouseWheel="RichTextBox_MouseWheel" FontFamily="Cambria" OpacityMask="Black" Background="White" SpellCheck.IsEnabled="True" BorderThickness="0,0,0,0">
+                        <RichTextBox x:Name="answersBox" VerticalScrollBarVisibility="Auto" FontSize="20" PreviewMouseWheel="RichTextBox_PreviewMouseWheel" FontFamily="Cambria" OpacityMask="Black" Background="White" SpellCheck.IsEnabled="True" BorderThickness="0,0,0,0">
                             <RichTextBox.Resources>
                                 <Style TargetType="{x:Type Paragraph}">
                                     <Setter Property="Margin" Value="0"/>
+                                </Style>
+                                <Style TargetType="{x:Type Border}">
+                                    <Setter Property="CornerRadius" Value="5"/>
                                 </Style>
                             </RichTextBox.Resources>
                             <RichTextBox.LayoutTransform>

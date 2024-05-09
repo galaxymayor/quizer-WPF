@@ -2,7 +2,7 @@
 
 namespace quizer_WPF
 {
-    public class Constants
+    public readonly struct Constants
     {
         public static readonly string[] CARD_E = [
             "A", "B", "C", "D", "E",

@@ -11,6 +11,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace quizer_WPF
@@ -25,10 +26,13 @@ namespace quizer_WPF
             SolidRed   = new(Color.FromRgb(0xd4, 0x38, 0x24)),
             SolidBlack = new(Color.FromRgb(0x00, 0x00, 0x00));
         private static bool inputBoxLock;
+        private static bool inputBoxLockOnce;
+        private static readonly char[] specialChars = ['[', '|', ']', '@'];
         public MainWindow()
         {
             InitializeComponent();
             inputBoxLock = false;
+            inputBoxLockOnce = false;
         }
 
 
@@ -44,35 +48,41 @@ namespace quizer_WPF
                 TextPointer idx = start;
                 TextRange toMark = new(start, end);
                 toMark.ClearAllProperties();
-                // List<int> reds = [], blues = [];
-                while (true)
+                while (idx.CompareTo(end) == -1)
                 {
-                    while (idx.GetPointerContext(LogicalDirection.Forward) != TextPointerContext.Text)
+                    var next = idx.GetNextInsertionPosition(LogicalDirection.Forward);
+                    if (next == null)
                     {
-                        idx = idx.GetNextContextPosition(LogicalDirection.Forward);
-                        if (idx == null || idx.CompareTo(end) >= 0)
+                        return;
+                    }
+                    toMark.Select(idx, next);
+                    if (!toMark.IsEmpty)
+                    {
+                        switch (toMark.Text[0])
                         {
-                            return;
+                            case '[':
+                            case '|':
+                            case ']':
+                                toMark.ApplyPropertyValue(TextElement.ForegroundProperty, SolidBlue);
+                                break;
+                            case '@':
+                                toMark.ApplyPropertyValue(TextElement.ForegroundProperty, SolidRed);
+                                break;
+                            default:
+                                //toMark.ApplyPropertyValue(TextElement.ForegroundProperty, SolidBlack);
+                                break;
                         }
                     }
-                    var next = idx.GetPositionAtOffset(1);
-                    toMark.Select(idx, next);
-                    switch (toMark.Text[0])
-                    {
-                        case '[':
-                        case '|':
-                        case ']':
-                            toMark.ApplyPropertyValue(TextElement.ForegroundProperty, SolidBlue);
-                            break;
-                        case '@':
-                            toMark.ApplyPropertyValue(TextElement.ForegroundProperty, SolidRed);
-                            break;
-                        default:
-                            toMark.ApplyPropertyValue(TextElement.ForegroundProperty, SolidBlack);
-                            break;
-                    }
-
                     idx = next;
+                    int seek = idx.GetTextInRun(LogicalDirection.Forward).IndexOfAny(specialChars);
+                    if (seek == -1)
+                    {
+                        idx = idx.GetPositionAtOffset(idx.GetTextRunLength(LogicalDirection.Forward));
+                    }
+                    else
+                    {
+                        idx = idx.GetPositionAtOffset(seek);
+                    }
                 }
             }
             finally
@@ -80,25 +90,6 @@ namespace quizer_WPF
                 inputBoxLock = false;
             }
 
-        }
-
-
-        private void RichTextBox_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            bool ctrlPressed = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
-            //var sender_ = (RichTextBox)sender;
-            if (!ctrlPressed)
-            {
-                return;
-            }
-            if (e.Delta > 0 && textScale.Value < 3)
-            {
-                textScale.Value += 0.1;
-            }
-            else if(e.Delta < 0 && textScale.Value > 1)
-            {
-                textScale.Value -= 0.1;
-            }
         }
 
         private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -117,34 +108,53 @@ namespace quizer_WPF
             }
         }
 
+        private void inputBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = false;
+            inputBoxLockOnce = e.Key == Key.Enter;
+        }
+
+        private void RichTextBox_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            bool ctrlPressed = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+            //var sender_ = (RichTextBox)sender;
+            if (!ctrlPressed)
+            {
+                return;
+            }
+            if (e.Delta > 0 && textScale.Value < 3)
+            {
+                textScale.Value += 0.1;
+            }
+            else if (e.Delta < 0 && textScale.Value > 1)
+            {
+                textScale.Value -= 0.1;
+            }
+            e.Handled = true;
+        }
+
         private void inputBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (inputBoxLock)
             {
                 return;
             }
-            int l = int.MaxValue, r = int.MinValue;
+            if (inputBoxLockOnce)
+            {
+                inputBoxLockOnce = false;
+                return;
+            }
+            //int l = int.MaxValue, r = int.MinValue;
             foreach(TextChange c in e.Changes)
             {
                 if (c.AddedLength <= 0)
                 {
                     continue;
                 }
-                if (c.Offset < l)
-                {
-                    l = c.Offset;
-                }
-                if (c.Offset + c.AddedLength > r)
-                {
-                    r = c.Offset + c.AddedLength;
-                }
+                Highlight(inputBox.Document.ContentStart.GetPositionAtOffset(c.Offset), inputBox.Document.ContentStart.GetPositionAtOffset(c.Offset+c.AddedLength) ?? inputBox.Document.ContentEnd);
+
             }
-            if(l ==  int.MaxValue)
-            {
-                return;
-            }
-            //Highlight(inputBox.Document.ContentStart, inputBox.Document.ContentEnd);
-            Highlight(inputBox.Document.ContentStart.GetPositionAtOffset(l), inputBox.Document.ContentEnd.GetPositionAtOffset(r)??inputBox.Document.ContentEnd);
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -152,7 +162,7 @@ namespace quizer_WPF
             TextRange trSource = new(inputBox.Document.ContentStart, inputBox.Document.ContentEnd);
             TextRange trQuestions = new(questionBox.Document.ContentStart, questionBox.Document.ContentEnd);
             TextRange trAnswers = new(answersBox.Document.ContentStart, answersBox.Document.ContentEnd);
-            Interface.Result result = Interface.LinesToResult(trSource.Text.Split('\n'));
+            Interface.Result result = Interface.LinesToResult(trSource.Text.Split("\r\n"));
             trQuestions.Text = string.Join("\n--------\n", result.questionParts);
             trAnswers.Text = "";
             foreach (var anss in result.answersParts)
@@ -164,15 +174,15 @@ namespace quizer_WPF
                 }
             }
 
-            if (result.messages.Item1.Count > 0)
+            if (result.messages.infos.Count > 0)
             {
-                MessageBox.Show(string.Join('\n', result.messages.Item1), "Information", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                MessageBox.Show(string.Join('\n', result.messages.infos), "Information", MessageBoxButton.OK, MessageBoxImage.Asterisk);
             }
-            if (result.messages.Item2.Count > 0)
+            if (result.messages.warnings.Count > 0)
             {
-                MessageBox.Show(string.Join('\n', result.messages.Item2), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(string.Join('\n', result.messages.warnings), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            if (result.messages.Item3.Count > 0)
+            if (result.messages.errors.Count > 0)
             {
                 MessageBox.Show(string.Join('\n', result.messages.Item3), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }

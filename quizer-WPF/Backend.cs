@@ -16,23 +16,42 @@ namespace quizer_WPF
         public bool markQuestionNumber = markQuestionNumber, underscoreLengthFixed = underscoreLengthFixed, provideCode = provideCode, lowerCase = lowerCase;
         public string wordListSeparator = wordListSeparator;
         public string[] codes = codes ?? Constants.CARD_E;
-        public Tuple<List<string>, List<string>, List<string>> messages = new([], [], []);
+        public (List<string> infos, List<string> warnings, List<string> errors) messages = ([], [], []);
     }
 
-    public abstract class PartBase(string source, PartConfig config)
+    public abstract class PartBase
     {
-        protected string source = source;
-        protected PartConfig config = config;
+        protected readonly string? source;
+        protected readonly string[]? sourceLines;
+        protected PartConfig config;
         protected List<string> ans = [];
+
+
+        public PartBase(in string source, PartConfig config)
+        {
+            this.source = source;
+            this.config = config;
+        }
+
+        public PartBase(in string[] sourceLines, PartConfig config)
+        {
+            this.sourceLines = sourceLines;
+            this.config = config;
+        }
 
         public abstract Tuple<string, List<string>> Produce();
     }
 
     public partial class PartVocSlot : PartBase
     {
-        public PartVocSlot(string source, PartConfig config) : base(source, config)
+        public PartVocSlot(in string source, PartConfig config) : base(source, config)
         {
         }
+
+        public PartVocSlot(in string[] sourceLines, PartConfig config) : base(sourceLines, config)
+        {
+        }
+
         private string Repl(Match matched)
         {
             var groups = matched.Groups;
@@ -45,18 +64,22 @@ namespace quizer_WPF
                     config.underscoreLength,
                     groups[1].Length + groups[2].Length + groups[3].Length + 2
                 );
-            return string.Join("", [
+            return string.Join("",
                 lqi,
                 groups[1].Value,
                 new ('_', vl),
                 groups[3].Value,
                 rqi
-            ]);
+            );
 
         }
 
         public override Tuple<string, List<string>> Produce()
         {
+            if (source == null)
+            {
+                return new(string.Join('\n', from line in sourceLines select SlotPattern().Replace(line, Repl)), ans);
+            }
             return new(SlotPattern().Replace(source, Repl), ans);
         }
 
@@ -68,7 +91,7 @@ namespace quizer_WPF
 
     public partial class PartVocSentence : PartBase
     {
-        private List<Tuple<string, string, string, string, string>> parsed_sentences;
+        private List<(string, string, string, string, string)> parsed_sentences;
         public int longest_v_len;
         public PartVocSentence(string source, PartConfig config) : base(source, config)
         {
@@ -87,10 +110,33 @@ namespace quizer_WPF
                 string ans = $"{parsed.Item2}{parsed.Item3}{parsed.Item4}";
                 longest_v_len = Math.Max(longest_v_len, ans.Length);
                 this.ans.Add(ans);
-                parsed_sentences.Add(parsed.ToTuple());
+                parsed_sentences.Add(parsed);
             }
         }
 
+        public PartVocSentence(in string[] sourceLines, PartConfig config) : base(sourceLines, config)
+        {
+            parsed_sentences = [];
+            longest_v_len = 0;
+
+            foreach (string line in sourceLines)
+            {
+                Match match = SlotPattern().Match(line);
+                if (!match.Success)
+                    continue;
+                var parsed = (
+                    match.Groups[1].Value,
+                    match.Groups[2].Value,
+                    match.Groups[3].Value,
+                    match.Groups[4].Value,
+                    match.Groups[5].Value
+                );
+                string ans = $"{parsed.Item2}{parsed.Item3}{parsed.Item4}";
+                longest_v_len = Math.Max(longest_v_len, ans.Length);
+                this.ans.Add(ans);
+                parsed_sentences.Add(parsed);
+            }
+        }
 
         public override Tuple<string, List<string>> Produce()
         {
@@ -130,15 +176,13 @@ namespace quizer_WPF
 
     public partial class PartVocMatch : PartBase
     {
-        private int longest;
-        private bool label;
-        private string[] hints;
-        private Func<int, string> qf;
+        private readonly string[] hints;
+        private readonly Func<int, string> qf;
 
         public PartVocMatch(string source, PartConfig config) : base(source, config)
         {
             List<string> words = [];
-            longest = 0;
+            int longest = 0;
             Func<string, string> maybe_lower = config.lowerCase ? s => s.ToLower() : s => s;
             foreach (Match match in SlotPattern().Matches(source).Cast<Match>())
             {
@@ -150,6 +194,7 @@ namespace quizer_WPF
             int[] orders = Enumerable.Range(0, quantity).ToArray();
             Random random = new();
             random.Shuffle(orders);
+            bool label;
             if (config.provideCode)
             {
                 if (quantity > config.codes.Length)
@@ -195,6 +240,9 @@ namespace quizer_WPF
             qf = i => string.Format(qfs, i);
         }
 
+        public PartVocMatch(in string[] sourceLines, PartConfig config) : this(string.Join('\n', sourceLines), config)
+        {
+        }
 
         private string Repl(Match match)
         {
@@ -217,13 +265,14 @@ namespace quizer_WPF
     class ToParts
     {
         public delegate PartBase PartBaseFactory(string source, PartConfig config);
-        public static PartBaseFactory? ChoosePartType(string type)
+        public delegate PartBase PartBaseFactoryLines(string[] source, PartConfig config);
+        public static PartBaseFactoryLines? ChoosePartType(string type)
         {
             return type switch
             {
-                "fill" => (string source, PartConfig config) => new PartVocSlot(source, config),
-                "pair" or "match" => (string source, PartConfig config) => new PartVocMatch(source, config),
-                "voc" => (string source, PartConfig config) => new PartVocSentence(source, config),
+                "fill" => (string[] sourceLns, PartConfig config) => new PartVocSlot(sourceLns, config),
+                "pair" or "match" => (string[] sourceLns, PartConfig config) => new PartVocMatch(sourceLns, config),
+                "voc" => (string[] sourceLns, PartConfig config) => new PartVocSentence(sourceLns, config),
                 _ => null,
             };
         }

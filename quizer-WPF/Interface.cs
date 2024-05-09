@@ -16,16 +16,16 @@ namespace quizer_WPF
         // example @5=[pair]L2CAZ
         // questions will start as Q5 and look like _(5)_, options from A-Z
 
-        public static Func<string, PartBase> ParsePartHead(string head, PartConfig config)
+        public static Func<string[], PartBase> ParsePartHead(in string head, PartConfig config)
         {
             var groups = HeadPattern().Match(head).Groups;
-            ToParts.PartBaseFactory configToStringToPart =
+            ToParts.PartBaseFactoryLines configToStringToPart =
                 ToParts.ChoosePartType(groups[4].Value) ??
                 throw new ArgumentException("doesn't have such question type.");
             config.markQuestionNumber = groups[1].Length == 0;
             if (groups[2].Length != 0)
             {
-                config.index = int.Parse(groups[2].Value);
+                config.index = int.Parse(groups[2].Value) - 1;
             }
             if (groups[3].Length != 0)
             {
@@ -76,22 +76,22 @@ namespace quizer_WPF
         public class Result(
             List<string> questionParts,
             List<KeyValuePair<int, List<string>>> answersParts,
-            Tuple<List<string>, List<string>, List<string>> messages
+            (List<string>, List<string>, List<string>) messages
         )
         {
             public List<string> questionParts = questionParts;
             public List<KeyValuePair<int, List<string>>> answersParts = answersParts;
-            public Tuple<List<string>, List<string>, List<string>> messages = messages;
+            public (List<string> infos, List<string> warnings, List<string> errors) messages = messages;
         }
 
 
-        public static Result LinesToResult(string[] lines)
+        public static Result LinesToResult(in string[] lines)
         {
             PartConfig config = new();
             List<KeyValuePair<int, List<string>>> answer = [];
             List<string> quesText = [];
             int idx = 0, end = lines.Length, startLine, endLine, start;
-            Func<string, PartBase> parsed;
+            Func<string[], PartBase> parsed;
             string q;
             List<string> a;
             while (idx < end)
@@ -107,7 +107,11 @@ namespace quizer_WPF
                 }
                 catch (Exception)
                 {
-                    config.messages.Item3.Add($"Syntax error at line {++idx}");
+                    if(idx == end)
+                    {
+                        break;
+                    }
+                    config.messages.errors.Add($"Syntax error at line {++idx}");
                     return new Result([], [], config.messages);
                 }
 
@@ -122,11 +126,11 @@ namespace quizer_WPF
 
                 try
                 {
-                    (q, a) = parsed(string.Join("\n", lines[startLine..endLine])).Produce();
+                    (q, a) = parsed(lines[startLine..endLine]).Produce();
                 }
                 catch (Exception)
                 {
-                    config.messages.Item3.Add($"Some error occur.\nCannot generate the quiz.");
+                    config.messages.errors.Add($"Some error occur.\nCannot generate the quiz.");
                     return new Result([], [], config.messages);
                 }
                 answer.Add(new(start, a));
