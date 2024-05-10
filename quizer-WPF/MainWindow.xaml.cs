@@ -92,6 +92,111 @@ namespace quizer_WPF
 
         }
 
+
+        private void AddBracket(TextPointer selStart, TextPointer selEnd)
+        {
+            TextPointer start, end, next;
+            TextRange tr;
+            string txt = inputBox.Selection.Text;
+            if (txt.Length > 1024)
+            {
+                start = selStart;
+                end = selEnd;
+
+                goto mark;
+            }
+            int startSpaces = txt.TakeWhile(char.IsWhiteSpace).Count();
+            if (startSpaces > 0)
+            {
+                next = selStart.GetPositionAtOffset(startSpaces);
+                do
+                {
+                    start = next;
+                    next = start.GetNextInsertionPosition(LogicalDirection.Forward); // maybe null!
+                    tr = new TextRange(start, next);
+                } while (tr.IsEmpty || tr.Text[0] == ' ');
+            }
+            else
+            {
+                string before = selStart.GetTextInRun(LogicalDirection.Backward);
+                int shift = -before.Reverse().TakeWhile(char.IsLetter).Count();
+                next = selStart.GetPositionAtOffset(shift);
+                do
+                {
+                    start = next;
+                    next = start.GetNextInsertionPosition(LogicalDirection.Backward); // maybe null!
+                    if (next == null)
+                    {
+                        break;
+                    }
+                    tr = new TextRange(next, start);
+                } while (tr.IsEmpty || char.IsLetter(tr.Text[0]));
+            }
+
+
+            int endSpaces = txt.Reverse().TakeWhile(char.IsWhiteSpace).Count();
+            if (endSpaces > 0)
+            {
+                next = selEnd.GetPositionAtOffset(-endSpaces);
+                do
+                {
+                    end = next;
+                    next = end.GetNextInsertionPosition(LogicalDirection.Backward); // maybe null!
+                    tr = new TextRange(next, end);
+                } while (tr.IsEmpty || char.IsWhiteSpace(tr.Text[0]));
+            }
+            else
+            {
+                string after = selEnd.GetTextInRun(LogicalDirection.Forward);
+                int shift = after.TakeWhile(char.IsLetter).Count();
+                next = selEnd.GetPositionAtOffset(shift);
+                do
+                {
+                    end = next;
+                    next = end.GetNextInsertionPosition(LogicalDirection.Forward); // maybe null!
+                    if (next == null)
+                    {
+                        break;
+                    }
+                    tr = new TextRange(end, next);
+                } while (tr.IsEmpty || char.IsLetter(tr.Text[0]));
+            }
+
+            mark:
+            try
+            {
+
+                inputBox.BeginChange();
+                inputBoxLock = true;
+
+                tr = new(start, start);
+                tr.Text = "[";
+                tr.ApplyPropertyValue(ForegroundProperty, SolidBlue);
+                if (start.CompareTo(selStart) == -1 && !new TextRange(start, selStart).IsEmpty)
+                {
+                    tr = new(selStart, selStart);
+                    tr.Text = "|";
+                    tr.ApplyPropertyValue(ForegroundProperty, SolidBlue);
+                }
+                tr = new(end, end);
+                tr.Text = "]";
+                tr.ApplyPropertyValue(ForegroundProperty, SolidBlue);
+                if (end.CompareTo(selEnd) == 1 && !new TextRange(selEnd, end).IsEmpty)
+                {
+                    tr = new(selEnd, selEnd);
+                    tr.Text = "|";
+                    tr.ApplyPropertyValue(ForegroundProperty, SolidBlue);
+                }
+
+            }
+            finally
+            {
+                inputBox.EndChange();
+                inputBoxLock = false;
+            }
+
+        }
+
         private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             TextRange trSource = new(inputBox.Document.ContentStart, inputBox.Document.ContentEnd);
@@ -111,7 +216,7 @@ namespace quizer_WPF
         private void inputBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = false;
-            inputBoxLockOnce = e.Key == Key.Enter;
+            inputBoxLockOnce = e.Key == Key.Enter || (e.Key == Key.Z || e.Key == Key.Y) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
         }
 
         private void RichTextBox_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -122,7 +227,7 @@ namespace quizer_WPF
             {
                 return;
             }
-            if (e.Delta > 0 && textScale.Value < 3)
+            if (e.Delta > 0 && textScale.Value < 2)
             {
                 textScale.Value += 0.1;
             }
@@ -131,6 +236,30 @@ namespace quizer_WPF
                 textScale.Value -= 0.1;
             }
             e.Handled = true;
+        }
+
+        private void inputBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Middle)
+            {
+                TextPointer selStart = inputBox.Selection.Start, selEnd = inputBox.Selection.End;
+                if(selStart.CompareTo(selEnd)!=0)
+                {
+                    AddBracket(selStart, selEnd);
+                }
+            }
+        }
+
+        private void inputBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Q && (Keyboard.IsKeyDown(Key.LeftCtrl)||Keyboard.IsKeyDown(Key.RightCtrl)))
+            {
+                TextPointer selStart = inputBox.Selection.Start, selEnd = inputBox.Selection.End;
+                if (selStart.CompareTo(selEnd) != 0)
+                {
+                    AddBracket(selStart, selEnd);
+                }
+            }
         }
 
         private void inputBox_TextChanged(object sender, TextChangedEventArgs e)

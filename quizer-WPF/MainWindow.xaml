@@ -22,9 +22,9 @@
                     <GroupBox Header="Controls" Margin="0,0,3,0" Grid.RowSpan="2" BorderThickness="0,0,0,0">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="43*"/>
-                                <RowDefinition Height="39*"/>
-                                <RowDefinition Height="446*"/>
+                                <RowDefinition Height="42"/>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Button Content="Generate" VerticalAlignment="Top" Height="26" Margin="3,6,3,0" BorderBrush="{x:Null}" Foreground="#FFE2E2E2" BorderThickness="0,0,0,0" FontSize="14" Click="Button_Click">
                                 <Button.Resources>
@@ -52,21 +52,18 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Slider x:Name="textScale" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Width="72" Value="1.5" Minimum="1" Maximum="3"/>
+                            <Slider x:Name="textScale" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Width="72" Value="1.5" Minimum="1" Maximum="2"/>
                         </Grid>
                     </GroupBox>
                     <Grid Grid.Column="2" Grid.RowSpan="2"/>
                     <GroupBox Grid.Column="1" Header="Source" Grid.RowSpan="2" Margin="0,0,6,0" BorderThickness="0,0,0,0">
-                        <RichTextBox x:Name="inputBox" VerticalScrollBarVisibility="Auto" FontSize="20" FontFamily="Cambria" Background="White" BorderThickness="0,0,0,0" TextChanged="inputBox_TextChanged" AutoWordSelection="False" PreviewKeyDown="inputBox_PreviewKeyDown" PreviewMouseWheel="RichTextBox_PreviewMouseWheel">
+                        <RichTextBox x:Name="inputBox" VerticalScrollBarVisibility="Auto" FontSize="20" FontFamily="Cambria" Background="White" BorderThickness="0,0,0,0" TextChanged="inputBox_TextChanged" AutoWordSelection="False" PreviewKeyDown="inputBox_PreviewKeyDown" PreviewMouseWheel="RichTextBox_PreviewMouseWheel" PreviewMouseDown="inputBox_PreviewMouseDown" KeyDown="inputBox_KeyDown">
                             <RichTextBox.Resources>
                                 <Style TargetType="{x:Type Paragraph}">
                                     <Setter Property="Margin" Value="0"/>
                                 </Style>
                                 <Style TargetType="{x:Type Border}">
                                     <Setter Property="CornerRadius" Value="5"/>
-                                </Style>
-                                <Style TargetType="{x:Type FlowDocumentScrollViewer}">
-                                    <Setter Property="Zoom"  Value="10"/>
                                 </Style>
                             </RichTextBox.Resources>
                             <RichTextBox.LayoutTransform>
