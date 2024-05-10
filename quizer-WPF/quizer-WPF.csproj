@@ -10,4 +10,16 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="quizer.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="icon\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="quizer.ico" />
+  </ItemGroup>
+
 </Project>

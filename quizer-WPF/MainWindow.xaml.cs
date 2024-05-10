@@ -262,6 +262,35 @@ namespace quizer_WPF
             }
         }
 
+        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled= true;
+            foreach(char c in e.Text)
+            {
+                if (c > '9' || c < '0')
+                {
+                    return;
+                }
+            }
+            e.Handled = false;
+        }
+
+
+        private void TextBox_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void TextBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            e.CancelCommand();
+        }
+
+        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = e.Key == Key.Space;
+        }
+
         private void inputBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (inputBoxLock)
