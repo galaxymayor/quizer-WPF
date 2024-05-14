@@ -108,7 +108,7 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <GroupBox Header="Source" Grid.RowSpan="2" Margin="0,0,6,0" BorderThickness="0,0,0,0">
-                            <ScrollViewer VerticalScrollBarVisibility="Auto" ClipToBounds="True" OpacityMask="{Binding ElementName=border, Mode=OneWay}">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <RichTextBox x:Name="inputBox" VerticalScrollBarVisibility="Disabled" FontSize="20" FontFamily="Cambria" Background="White" TextChanged="inputBox_TextChanged" AutoWordSelection="False" PreviewKeyDown="inputBox_PreviewKeyDown" PreviewMouseWheel="RichTextBox_PreviewMouseWheel" PreviewMouseDown="inputBox_PreviewMouseDown" KeyDown="inputBox_KeyDown" BorderThickness="0,0,0,0">
                                     <RichTextBox.Resources>
                                         <Style TargetType="{x:Type Paragraph}">

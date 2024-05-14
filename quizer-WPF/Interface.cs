@@ -16,60 +16,62 @@ namespace quizer_WPF
         // example @5=[pair]L2CAZ
         // questions will start as Q5 and look like _(5)_, options from A-Z
 
-        public static Func<string[], PartBase> ParsePartHead(in string head, PartConfig config)
+
+        private static readonly bool?[] n_t_f = [null, true, false];
+        public static PartConfigNull ReadConfig(in string head)
         {
             var groups = HeadPattern().Match(head).Groups;
-            ToParts.PartBaseFactoryLines configToStringToPart =
-                ToParts.ChoosePartType(groups[4].Value) ??
-                throw new ArgumentException("doesn't have such question type.");
-            config.markQuestionNumber = groups[1].Length == 0;
-            if (groups[2].Length != 0)
+            return new PartConfigNull
             {
-                config.index = int.Parse(groups[2].Value) - 1;
-            }
-            if (groups[3].Length != 0)
-            {
-                config.questionNumberAlignment = groups[3].Value[0];
-            }
-            if (groups[5].Length != 0)
-            {
-                config.underscoreLength = int.Parse(groups[5].Value);
-            }
-            if (groups[6].Length != 0)
-            {
-                config.underscoreLengthFixed = groups[6].Length == 1;
-            }
-            if (groups[7].Length != 0)
-            {
-                config.underscoreInSentenceLength = int.Parse(groups[7].Value);
-            }
-            if (groups[8].Length != 0)
-            {
-                config.provideCode = groups[8].Length == 1;
-            }
-            if (groups[9].Length != 0)
-            {
-                config.codes = groups[9].Value switch
+                partType = groups[4].Value,
+                markQuestionNumber = groups[1].Length == 0,
+                index = groups[2].Length != 0 ? int.Parse(groups[2].Value) - 1 : null,
+                questionNumberAlignment = groups[3].Length != 0 ? groups[3].Value[0] : null,
+                underscoreLength = groups[5].Length != 0 ? int.Parse(groups[5].Value) : null,
+                underscoreLengthFixed = n_t_f[groups[6].Length],
+                underscoreInSentenceLength = groups[7].Length != 0 ? int.Parse(groups[7].Value) : null,
+                provideCode = n_t_f[groups[8].Length],
+                codes = groups[9].Length != 0 ? groups[9].Value switch
                 {
                     "AZ" => Constants.AZ,
                     "CF" => Constants.CARD_F,
                     _ => Constants.CARD_E
-                };
-            }
-            if (groups[10].Length != 0)
-            {
-                config.lowerCase = groups[10].Length == 2;
-            }
-            if (groups[11].Length != 0)
-            {
-                config.wordListSeparator = groups[11].Value;
-            }
+                } : null,
+                lowerCase = groups[10].Length != 0 ? groups[10].Length==2 : null,
+                wordListSeparator = groups[11].Length != 0 ? groups[11].Value : null
+            };
+        }
+
+        public static void ConfigOverride(in PartConfigNull over, ref PartConfig config)
+        {
+            config.partType = over.partType!=null && ToParts.IsPartType(over.partType) ? over.partType : config.partType;
+            config.markQuestionNumber = over.markQuestionNumber ?? config.markQuestionNumber;
+            config.index = over.index ?? config.index;
+            config.questionNumberAlignment = over.questionNumberAlignment ?? config.questionNumberAlignment;
+            config.underscoreLength = over.underscoreLength ?? config.underscoreLength;
+            config.underscoreLengthFixed = over.underscoreLengthFixed ?? config.underscoreLengthFixed;
+            config.underscoreInSentenceLength = over.underscoreInSentenceLength ?? config.underscoreInSentenceLength;
+            config.provideCode = over.provideCode ?? config.provideCode;
+            config.codes = over.codes ?? config.codes;
+            config.lowerCase = over.lowerCase ?? config.lowerCase;
+            config.wordListSeparator = over.wordListSeparator ?? config.wordListSeparator;
+        }
+
+
+        public static Func<string[], PartBase> ParsePartHead(in string head, PartConfig config)
+        {
+            var over = ReadConfig(head);
+            ToParts.PartBaseFactoryLines configToStringToPart =
+                over.partType != null && ToParts.IsPartType(over.partType) ?
+                ToParts.ChoosePartType(over.partType) :
+                throw new ArgumentException("doesn't have such question type.");
+            ConfigOverride(over, ref config);
             return source => configToStringToPart(source, config);
 
 
         }
 
-        [GeneratedRegex(@"@(\!)?(\d*)?([<=>])?\[(\w*)\](?:L(\d+))?(N?F)?(?:Q(\d+))?(N?C)?(CE|CF|AZ)?(N?LC)?(?:SEP\[(.*)\])?")]
+        [GeneratedRegex(@"^@(\!)?(\d*)?([<=>])?\[(\w*)\](?:L(\d+))?(N?F)?(?:Q(\d+))?(N?C)?(CE|CF|AZ)?(N?LC)?(?:SEP\[(.*)\])?$")]
         private static partial Regex HeadPattern();
 
 

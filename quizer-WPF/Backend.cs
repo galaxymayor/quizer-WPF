@@ -5,12 +5,14 @@ namespace quizer_WPF
 {
 
     public class PartConfig(
+        string partType = "fill",
         int underscoreLength = 4, int underscoreInSentenceLength = 0, int index = 0,
         char questionNumberAlignment = '<',
         bool markQuestionNumber = true, bool underscoreLengthFixed = false,
         bool provideCode = true, bool lowerCase = false,
         string wordListSeparator = "  ", string[]? codes = null)
     {
+        public string partType = partType;
         public int underscoreLength = underscoreLength, underscoreInSentenceLength = underscoreInSentenceLength, index = index;
         public char questionNumberAlignment = questionNumberAlignment;
         public bool markQuestionNumber = markQuestionNumber, underscoreLengthFixed = underscoreLengthFixed, provideCode = provideCode, lowerCase = lowerCase;
@@ -18,6 +20,30 @@ namespace quizer_WPF
         public string[] codes = codes ?? Constants.CARD_E;
         public (List<string> infos, List<string> warnings, List<string> errors) messages = ([], [], []);
     }
+
+
+    public struct PartConfigNull(
+        string? partType,
+        int? underscoreLength, int? underscoreInSentenceLength, int? index,
+        char? questionNumberAlignment,
+        bool? markQuestionNumber, bool? underscoreLengthFixed,
+        bool? provideCode, bool? lowerCase,
+        string? wordListSeparator, string[]? codes
+    )
+    {
+        public string? partType = partType;
+        public int? underscoreLength = underscoreLength;
+        public int? underscoreInSentenceLength = underscoreInSentenceLength;
+        public int? index = index;
+        public char? questionNumberAlignment = questionNumberAlignment;
+        public bool? markQuestionNumber = markQuestionNumber;
+        public bool? underscoreLengthFixed = underscoreLengthFixed;
+        public bool? provideCode = provideCode;
+        public bool? lowerCase = lowerCase;
+        public string? wordListSeparator = wordListSeparator;
+        public string[]? codes = codes;
+    }
+
 
     public abstract class PartBase
     {
@@ -186,7 +212,7 @@ namespace quizer_WPF
             Func<string, string> maybe_lower = config.lowerCase ? s => s.ToLower() : s => s;
             foreach (Match match in SlotPattern().Matches(source).Cast<Match>())
             {
-                words.Add(match.Groups[1].Value);
+                words.Add(maybe_lower(match.Groups[1].Value));
                 longest = Math.Max(longest, match.Groups[1].Length);
             }
             int quantity = words.Count;
@@ -266,6 +292,13 @@ namespace quizer_WPF
     {
         public delegate PartBase PartBaseFactory(string source, PartConfig config);
         public delegate PartBase PartBaseFactoryLines(string[] source, PartConfig config);
+        
+        private static readonly string[] types = ["fill", "pair", "match", "voc"];
+
+        public static bool IsPartType(string? type)
+        {
+            return types.Contains(type);
+        }
         public static PartBaseFactoryLines? ChoosePartType(string type)
         {
             return type switch
