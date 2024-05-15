@@ -42,6 +42,29 @@ namespace quizer_WPF
             };
         }
 
+        public static string WriteConfig(in PartConfigNull config)
+        {
+            string partType = config.partType ?? "";
+            string markQuestionNumber = config.markQuestionNumber==false ? "!" : "";
+            string index = (config.index + 1)?.ToString() ?? "";
+            string questionNumberAlignment = config.questionNumberAlignment?.ToString() ?? "";
+            string underscoreLength = config.underscoreLength != null ? $"L{config.underscoreLength}" : "";
+            string underscoreLengthFixed = config.underscoreLengthFixed == true ? "F" : config.underscoreLengthFixed == false ? "NF" : "";
+            string underscoreInSentenceLength = config.underscoreInSentenceLength != null ? $"Q{config.underscoreInSentenceLength}" : "";
+            string provideCode = config.provideCode == true ? "C" : config.provideCode == false ? "NC" : "";
+            string codes = config.codes?.Length switch
+            {
+                63 => "CE",
+                31 => "CF",
+                26 => "AZ",
+                _ => ""
+            };
+            string lowerCase = config.lowerCase == true ? "LC" : config.lowerCase == false ? "NLC" : "";
+            string wordListSeparator = config.wordListSeparator != null ? $"SEP[{config.wordListSeparator}]" : "";
+            return $"@{markQuestionNumber}{index}{questionNumberAlignment}[{partType}]{underscoreLength}{underscoreLengthFixed}{underscoreInSentenceLength}{provideCode}{codes}{lowerCase}{wordListSeparator}";
+
+        }
+
         public static void ConfigOverride(in PartConfigNull over, ref PartConfig config)
         {
             config.partType = over.partType!=null && ToParts.IsPartType(over.partType) ? over.partType : config.partType;

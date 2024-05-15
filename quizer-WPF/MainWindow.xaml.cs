@@ -25,12 +25,15 @@ namespace quizer_WPF
             SolidBlue  = new(Color.FromRgb(0x05, 0x89, 0xfc)),
             SolidRed   = new(Color.FromRgb(0xd4, 0x38, 0x24)),
             SolidBlack = new(Color.FromRgb(0x00, 0x00, 0x00));
-        private static bool inputBoxLock;
-        private static bool inputBoxLockOnce;
+        private bool inputBoxLock;
+        private bool inputBoxLockOnce;
+        private bool GUIConfigLock;
         private static readonly char[] specialChars = ['[', '|', ']', '@'];
         public MainWindow()
         {
+            GUIConfigLock = true;
             InitializeComponent();
+            GUIConfigLock = false;
             inputBoxLock = false;
             inputBoxLockOnce = false;
         }
@@ -343,6 +346,139 @@ namespace quizer_WPF
             if (result.messages.errors.Count > 0)
             {
                 MessageBox.Show(string.Join('\n', result.messages.Item3), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void inputBox_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            var sel = inputBox.Selection;
+            if(sel.Start.CompareTo(sel.End) != 0)
+            {
+                return;
+            }
+            var lineStart = sel.Start.GetLineStartPosition(0);
+            var lineEnd = sel.Start.GetLineStartPosition(1) ?? inputBox.Document.ContentEnd;
+            var line = new TextRange(lineStart, lineEnd);
+            var text = line.Text.TrimEnd();
+            if (text.Length == 0 || text[0] != '@' || text.Length>1 && text[1] == '@')
+            {
+                return;
+            }
+            try
+            {
+                var config = Interface.ReadConfig(text);
+                WriteConfigGUI(config);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+
+
+        private void GUIConfigToLine()
+        {
+            try
+            {
+                var config = ReadConfigGUI();
+                var sel = inputBox.Selection;
+                var lineStart = sel.Start.GetLineStartPosition(0);
+                var lineEnd = sel.Start.GetLineStartPosition(1)?.GetPositionAtOffset(-2) ?? inputBox.Document.ContentEnd;
+                var line = new TextRange(lineStart, lineEnd);
+                line.Text = Interface.WriteConfig(config);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+
+        private void ConfigGUIChanged<T>(object sender, T e) where T: RoutedEventArgs
+        {
+            if (GUIConfigLock)
+            {
+                return;
+            }
+            GUIConfigToLine();
+        }
+
+
+        private PartConfigNull ReadConfigGUI()
+        {
+            return new()
+            {
+                partType = blockType.SelectedIndex switch
+                {
+                    0 => "fill",
+                    1 => "match",
+                    2 => "voc",
+                    _ => null
+                },
+                provideCode = provideCode.IsChecked,
+                codes = codeType.SelectedIndex switch
+                {
+                    0 => Constants.CARD_E,
+                    1 => Constants.CARD_F,
+                    2 => Constants.AZ,
+                    _ => null
+                },
+                underscoreLength = int.TryParse(answerBlankLength.Text, out int l) ? l : null,
+                lowerCase = forceLowerCase.IsChecked,
+                wordListSeparator = wordListSeparator.Text.Length > 0 ? wordListSeparator.Text : null,
+                index = int.TryParse(startIndex.Text, out int i) ? --i : null,
+                markQuestionNumber = showIndex.IsChecked,
+                questionNumberAlignment = indexAlignment.SelectedIndex switch
+                {
+                    0 => '<',
+                    1 => '=',
+                    2 => '>',
+                    _ => null
+                },
+                underscoreInSentenceLength = int.TryParse(questionBlankLength.Text, out l) ? l : null,
+                underscoreLengthFixed = lengthFixed.IsChecked
+            };
+        }
+
+
+        private void WriteConfigGUI(in PartConfigNull config)
+        {
+            try
+            {
+                GUIConfigLock = true;
+                blockType.SelectedIndex = config.partType switch {
+                    "fill" => 0,
+                    "match" or "pair" => 1,
+                    "voc" => 2,
+                    _ => -1
+                };
+                provideCode.IsChecked = config.provideCode;
+                codeType.SelectedIndex = config.codes?.Length switch
+                {
+                    31 => 0,
+                    63 => 1,
+                    26 => 2,
+                    _ => -1
+                };
+                answerBlankLength.Text = config.underscoreLength?.ToString() ?? "";
+                forceLowerCase.IsChecked = config.lowerCase;
+                wordListSeparator.Text = config.wordListSeparator ?? "";
+
+                startIndex.Text = config.index != null ? $"{config.index+1}" : "";
+                showIndex.IsChecked = config.markQuestionNumber;
+                indexAlignment.SelectedIndex = config.questionNumberAlignment switch
+                {
+                    '<' => 0,
+                    '=' => 1,
+                    '>' => 2,
+                    _ => -1
+                };
+                questionBlankLength.Text = config.underscoreInSentenceLength?.ToString() ?? "";
+                lengthFixed.IsChecked = config.underscoreLengthFixed;
+
+            }
+            finally
+            {
+                GUIConfigLock = false;
             }
         }
     }
