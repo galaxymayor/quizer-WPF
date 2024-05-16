@@ -42,6 +42,55 @@ namespace quizer_WPF
         public bool? lowerCase = lowerCase;
         public string? wordListSeparator = wordListSeparator;
         public string[]? codes = codes;
+
+
+        public void ApplyFilter(PartConfigFilter filter)
+        {
+            if (!filter.partType)
+                partType = null;
+            if (!filter.underscoreLength)
+                underscoreLength = null;
+            if (!filter.underscoreInSentenceLength)
+                underscoreInSentenceLength = null;
+            if (!filter.index)
+                index = null;
+            if (!filter.questionNumberAlignment)
+                questionNumberAlignment = null;
+            if (!filter.markQuestionNumber)
+                markQuestionNumber = null;
+            if (!filter.underscoreLengthFixed)
+                underscoreLengthFixed = null;
+            if (!filter.provideCode)
+                provideCode = null;
+            if (!filter.lowerCase)
+                lowerCase = null;
+            if (!filter.wordListSeparator)
+                wordListSeparator = null;
+            if (!filter.codes)
+                codes = null;
+        }
+    }
+
+    public struct PartConfigFilter(
+        bool partType,
+        bool underscoreLength, bool underscoreInSentenceLength, bool index,
+        bool questionNumberAlignment,
+        bool markQuestionNumber, bool underscoreLengthFixed,
+        bool provideCode, bool lowerCase,
+        bool wordListSeparator, bool codes
+    )
+    {
+        public bool partType = partType;
+        public bool underscoreLength = underscoreLength;
+        public bool underscoreInSentenceLength = underscoreInSentenceLength;
+        public bool index = index;
+        public bool questionNumberAlignment = questionNumberAlignment;
+        public bool markQuestionNumber = markQuestionNumber;
+        public bool underscoreLengthFixed = underscoreLengthFixed;
+        public bool provideCode = provideCode;
+        public bool lowerCase = lowerCase;
+        public bool wordListSeparator = wordListSeparator;
+        public bool codes = codes;
     }
 
 
@@ -288,7 +337,7 @@ namespace quizer_WPF
         private static partial Regex SlotPattern();
     }
 
-    class ToParts
+    class Parts
     {
         public delegate PartBase PartBaseFactory(string source, PartConfig config);
         public delegate PartBase PartBaseFactoryLines(string[] source, PartConfig config);
@@ -307,6 +356,17 @@ namespace quizer_WPF
                 "pair" or "match" => (string[] sourceLns, PartConfig config) => new PartVocMatch(sourceLns, config),
                 "voc" => (string[] sourceLns, PartConfig config) => new PartVocSentence(sourceLns, config),
                 _ => null,
+            };
+        }
+
+        public static PartConfigFilter GetPartConfigFilter(string? type)
+        {
+            return type switch
+            {
+                "fill" => Constants.FILL_FILTER,
+                "pair" or "match"=> Constants.MATCH_FILTER,
+                "voc" => Constants.VOC_FILTER,
+                _ => Constants.PART_ONLY_FILTER,
             };
         }
     }

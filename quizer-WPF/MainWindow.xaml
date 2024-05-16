@@ -77,12 +77,12 @@
                             <CheckBox x:Name="showIndex" Grid.Column="5" Grid.Row="1" Content="Show Index" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="18" Width="91" IsChecked="{x:Null}" Checked="ConfigGUIChanged" Unchecked="ConfigGUIChanged"/>
                             <Label Grid.Column="6" Content="Index Alignment" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center"/>
                             <Label Grid.Column="6" Content="Code Type" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <ComboBox x:Name="codeType" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Height="25" SelectedIndex="0" SelectionChanged="ConfigGUIChanged">
+                            <ComboBox x:Name="codeType" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Height="25" SelectionChanged="ConfigGUIChanged">
                                 <ComboBoxItem>A-E (Combination)</ComboBoxItem>
                                 <ComboBoxItem>A-F (Combination)</ComboBoxItem>
                                 <ComboBoxItem>A-Z</ComboBoxItem>
                             </ComboBox>
-                            <ComboBox x:Name="indexAlignment" Grid.Column="7" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Width="120" Height="25" SelectedIndex="0" SelectionChanged="ConfigGUIChanged">
+                            <ComboBox x:Name="indexAlignment" Grid.Column="7" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Width="120" Height="25" SelectionChanged="ConfigGUIChanged">
                                 <ComboBoxItem>Left</ComboBoxItem>
                                 <ComboBoxItem>Center</ComboBoxItem>
                                 <ComboBoxItem>Right</ComboBoxItem>

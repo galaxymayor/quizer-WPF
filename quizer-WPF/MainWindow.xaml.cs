@@ -28,6 +28,7 @@ namespace quizer_WPF
         private bool inputBoxLock;
         private bool inputBoxLockOnce;
         private bool GUIConfigLock;
+        private bool GUIAllDisabled;
         private static readonly char[] specialChars = ['[', '|', ']', '@'];
         public MainWindow()
         {
@@ -35,6 +36,8 @@ namespace quizer_WPF
             InitializeComponent();
             GUIConfigLock = false;
             inputBoxLock = false;
+            WriteEnabledGUI(Constants.FALSE_FILTER);
+            GUIAllDisabled = true;
             inputBoxLockOnce = false;
         }
 
@@ -362,6 +365,12 @@ namespace quizer_WPF
             var text = line.Text.TrimEnd();
             if (text.Length == 0 || text[0] != '@' || text.Length>1 && text[1] == '@')
             {
+                if(!GUIAllDisabled)
+                {
+                    WriteConfigGUI(Constants.NULL_CONFIG);
+                    WriteEnabledGUI(Constants.FALSE_FILTER);
+                    GUIAllDisabled = true;
+                }
                 return;
             }
             try
@@ -383,9 +392,11 @@ namespace quizer_WPF
                 var config = ReadConfigGUI();
                 var sel = inputBox.Selection;
                 var lineStart = sel.Start.GetLineStartPosition(0);
-                var lineEnd = sel.Start.GetLineStartPosition(1)?.GetPositionAtOffset(-2) ?? inputBox.Document.ContentEnd;
+                var lineEnd = (sel.Start.GetLineStartPosition(1) ?? inputBox.Document.ContentEnd).GetPositionAtOffset(-2);
                 var line = new TextRange(lineStart, lineEnd);
                 line.Text = Interface.WriteConfig(config);
+
+                WriteEnabledGUI(Parts.GetPartConfigFilter(config.partType));
             }
             catch (Exception)
             {
@@ -403,9 +414,51 @@ namespace quizer_WPF
         }
 
 
-        private PartConfigNull ReadConfigGUI()
+        private PartConfigFilter ReadEnabledGUI()
         {
             return new()
+            {
+                partType = blockType.IsEnabled,
+                underscoreLength = answerBlankLength.IsEnabled,
+                underscoreInSentenceLength = questionBlankLength.IsEnabled,
+                index = startIndex.IsEnabled,
+                questionNumberAlignment = indexAlignment.IsEnabled,
+                markQuestionNumber = showIndex.IsEnabled,
+                underscoreLengthFixed = lengthFixed.IsEnabled,
+                provideCode = provideCode.IsEnabled,
+                codes = codeType.IsEnabled,
+                lowerCase = forceLowerCase.IsEnabled,
+                wordListSeparator = wordListSeparator.IsEnabled,
+            };
+        }
+
+        private void WriteEnabledGUI(in PartConfigFilter filter)
+        {
+            //try
+            //{
+                //GUIConfigLock = true;
+            blockType.IsEnabled = filter.partType;
+            answerBlankLength.IsEnabled = filter.underscoreLength;
+            questionBlankLength.IsEnabled = filter.underscoreInSentenceLength;
+            startIndex.IsEnabled = filter.index;
+            indexAlignment.IsEnabled = filter.questionNumberAlignment;
+            showIndex.IsEnabled = filter.markQuestionNumber;
+            lengthFixed.IsEnabled = filter.underscoreLengthFixed;
+            provideCode.IsEnabled = filter.provideCode;
+            codeType.IsEnabled = filter.codes;
+            forceLowerCase.IsEnabled = filter.lowerCase;
+            wordListSeparator.IsEnabled = filter.wordListSeparator;
+            //}
+            //finally
+            //{
+            //    GUIConfigLock = false;
+            //}
+        }
+
+
+        private PartConfigNull ReadConfigGUI()
+        {
+            PartConfigNull ans = new()
             {
                 partType = blockType.SelectedIndex switch
                 {
@@ -437,6 +490,8 @@ namespace quizer_WPF
                 underscoreInSentenceLength = int.TryParse(questionBlankLength.Text, out l) ? l : null,
                 underscoreLengthFixed = lengthFixed.IsChecked
             };
+            ans.ApplyFilter(ReadEnabledGUI());
+            return ans;
         }
 
 
@@ -475,6 +530,9 @@ namespace quizer_WPF
                 questionBlankLength.Text = config.underscoreInSentenceLength?.ToString() ?? "";
                 lengthFixed.IsChecked = config.underscoreLengthFixed;
 
+
+                WriteEnabledGUI(Parts.GetPartConfigFilter(config.partType));
+                GUIAllDisabled = false;
             }
             finally
             {

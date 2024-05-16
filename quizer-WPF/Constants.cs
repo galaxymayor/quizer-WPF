@@ -25,5 +25,81 @@ namespace quizer_WPF
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
             "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
         ];
+
+        public static readonly PartConfigFilter FILL_FILTER = new(
+            partType: true,
+            underscoreLength: true,
+            underscoreInSentenceLength: false,
+            index: true,
+            questionNumberAlignment: true,
+            markQuestionNumber: true,
+            underscoreLengthFixed: true,
+            provideCode: false,
+            lowerCase: false,
+            wordListSeparator: false,
+            codes: false
+        ), VOC_FILTER = new(
+            partType: true,
+            underscoreLength: true,
+            underscoreInSentenceLength: true,
+            index: true,
+            questionNumberAlignment: false,
+            markQuestionNumber: true,
+            underscoreLengthFixed: true,
+            provideCode: false,
+            lowerCase: false,
+            wordListSeparator: false,
+            codes: false
+        ), MATCH_FILTER = new(
+            partType: true,
+            underscoreLength: true,
+            underscoreInSentenceLength: false,
+            index: true,
+            questionNumberAlignment: true,
+            markQuestionNumber: true,
+            underscoreLengthFixed: true,
+            provideCode: true,
+            lowerCase: true,
+            wordListSeparator: true,
+            codes: true
+        ), TRUE_FILTER = new(
+            partType: true,
+            underscoreLength: true,
+            underscoreInSentenceLength: true,
+            index: true,
+            questionNumberAlignment: true,
+            markQuestionNumber: true,
+            underscoreLengthFixed: true,
+            provideCode: true,
+            lowerCase: true,
+            wordListSeparator: true,
+            codes: true
+        ), FALSE_FILTER = new(
+            partType: false,
+            underscoreLength: false,
+            underscoreInSentenceLength: false,
+            index: false,
+            questionNumberAlignment: false,
+            markQuestionNumber: false,
+            underscoreLengthFixed: false,
+            provideCode: false,
+            lowerCase: false,
+            wordListSeparator: false,
+            codes: false
+        ), PART_ONLY_FILTER = new(
+            partType: true,
+            underscoreLength: false,
+            underscoreInSentenceLength: false,
+            index: false,
+            questionNumberAlignment: false,
+            markQuestionNumber: false,
+            underscoreLengthFixed: false,
+            provideCode: false,
+            lowerCase: false,
+            wordListSeparator: false,
+            codes: false
+        );
+
+        public static readonly PartConfigNull NULL_CONFIG = new();
     }
 }

@@ -67,7 +67,7 @@ namespace quizer_WPF
 
         public static void ConfigOverride(in PartConfigNull over, ref PartConfig config)
         {
-            config.partType = over.partType!=null && ToParts.IsPartType(over.partType) ? over.partType : config.partType;
+            config.partType = over.partType!=null && Parts.IsPartType(over.partType) ? over.partType : config.partType;
             config.markQuestionNumber = over.markQuestionNumber ?? config.markQuestionNumber;
             config.index = over.index ?? config.index;
             config.questionNumberAlignment = over.questionNumberAlignment ?? config.questionNumberAlignment;
@@ -84,9 +84,9 @@ namespace quizer_WPF
         public static Func<string[], PartBase> ParsePartHead(in string head, PartConfig config)
         {
             var over = ReadConfig(head);
-            ToParts.PartBaseFactoryLines configToStringToPart =
-                over.partType != null && ToParts.IsPartType(over.partType) ?
-                ToParts.ChoosePartType(over.partType) :
+            Parts.PartBaseFactoryLines configToStringToPart =
+                over.partType != null && Parts.IsPartType(over.partType) ?
+                Parts.ChoosePartType(over.partType) :
                 throw new ArgumentException("doesn't have such question type.");
             ConfigOverride(over, ref config);
             return source => configToStringToPart(source, config);
