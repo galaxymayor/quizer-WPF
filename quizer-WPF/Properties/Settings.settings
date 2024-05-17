@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="quizer_WPF.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Zoom" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1.5</Value>
+    </Setting>
+    <Setting Name="DefaultConfigFill" Type="System.String" Scope="User">
+      <Value Profile="(Default)">@[fill]</Value>
+    </Setting>
+    <Setting Name="DefaultConfigMatch" Type="System.String" Scope="User">
+      <Value Profile="(Default)">@[match]</Value>
+    </Setting>
+    <Setting Name="DefaultConfigVoc" Type="System.String" Scope="User">
+      <Value Profile="(Default)">@[voc]</Value>
+    </Setting>
+    <Setting Name="TextFont" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Cambria</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

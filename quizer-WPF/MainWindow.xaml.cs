@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 
 namespace quizer_WPF
 {
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -30,6 +31,7 @@ namespace quizer_WPF
         private bool GUIConfigLock;
         private bool GUIAllDisabled;
         private static readonly char[] specialChars = ['[', '|', ']', '@'];
+
         public MainWindow()
         {
             GUIConfigLock = true;
@@ -39,8 +41,24 @@ namespace quizer_WPF
             WriteEnabledGUI(Constants.FALSE_FILTER);
             GUIAllDisabled = true;
             inputBoxLockOnce = false;
+            ReadSettings();
         }
 
+
+        private void ReadSettings()
+        {
+            textScale.Value = Properties.Settings.Default.Zoom;
+            textFont.Text = Properties.Settings.Default.TextFont;
+        }
+
+
+        private void WriteSettings()
+        {
+            Properties.Settings.Default.Zoom = textScale.Value;
+            Properties.Settings.Default.TextFont = textFont.Text;
+
+            Properties.Settings.Default.Save();
+        }
 
         private void Highlight(TextPointer start, TextPointer end)
         {
@@ -236,6 +254,7 @@ namespace quizer_WPF
             if (e.Delta > 0 && textScale.Value < 2)
             {
                 textScale.Value += 0.1;
+
             }
             else if (e.Delta < 0 && textScale.Value > 1)
             {
@@ -455,6 +474,10 @@ namespace quizer_WPF
             //}
         }
 
+        private void mainWindow_Closed(object sender, EventArgs e)
+        {
+            WriteSettings();
+        }
 
         private PartConfigNull ReadConfigGUI()
         {
@@ -490,7 +513,7 @@ namespace quizer_WPF
                 underscoreInSentenceLength = int.TryParse(questionBlankLength.Text, out l) ? l : null,
                 underscoreLengthFixed = lengthFixed.IsChecked
             };
-            ans.ApplyFilter(ReadEnabledGUI());
+            //ans.ApplyFilter(ReadEnabledGUI());
             return ans;
         }
 
@@ -539,5 +562,7 @@ namespace quizer_WPF
                 GUIConfigLock = false;
             }
         }
+
     }
+
 }

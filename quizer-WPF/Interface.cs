@@ -128,7 +128,7 @@ namespace quizer_WPF
                         ++idx;
                     }
 
-                    parsed = ParsePartHead(lines[idx], config);
+                    parsed = ParsePartHead(lines[idx].TrimEnd(), config);
                 }
                 catch (Exception)
                 {
