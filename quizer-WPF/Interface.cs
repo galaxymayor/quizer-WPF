@@ -54,8 +54,8 @@ namespace quizer_WPF
             string provideCode = config.provideCode == true ? "C" : config.provideCode == false ? "NC" : "";
             string codes = config.codes?.Length switch
             {
-                63 => "CE",
-                31 => "CF",
+                31 => "CE",
+                63 => "CF",
                 26 => "AZ",
                 _ => ""
             };

@@ -49,10 +49,6 @@ namespace quizer_WPF
             vocDefault = setVocGrid.DataContext as DefaultConfigModel;
             matchDefault = setMatchGrid.DataContext as DefaultConfigModel;
 
-            //BindingOperations.SetBinding(setFillShowIndex, ComboBox.SelectedIndexProperty, new Binding("ShowIndex") { Source = defaults });
-            //BindingOperations.SetBinding(setFillBlankFixed, ComboBox.SelectedIndexProperty, new Binding("ShowIndex") { Source = defaults });
-
-
 
             ReadSettings();
         }
@@ -64,8 +60,11 @@ namespace quizer_WPF
             textFont.Text = Properties.Settings.Default.TextFont;
             
             fillDefault.SetConfig(Interface.ReadConfig(Properties.Settings.Default.DefaultConfigFill));
+            fillDefault.PartType = "fill";
             vocDefault.SetConfig(Interface.ReadConfig(Properties.Settings.Default.DefaultConfigVoc));
+            vocDefault.PartType = "voc";
             matchDefault.SetConfig(Interface.ReadConfig(Properties.Settings.Default.DefaultConfigMatch));
+            matchDefault.PartType = "match";
         }
 
 
@@ -472,6 +471,24 @@ namespace quizer_WPF
             };
         }
 
+        private void buttonSetDefault_Click(object sender, RoutedEventArgs e)
+        {
+            var defaultConfig = blockType.SelectedIndex switch
+            {
+                0 => fillDefault.GetConfig(),
+                1 => matchDefault.GetConfig(),
+                2 => vocDefault.GetConfig(),
+                _ => Constants.NULL_CONFIG
+            };
+            WriteConfigGUI(defaultConfig);
+            GUIConfigToLine();
+        }
+
+        private void OtherBoxesFocused(object sender, RoutedEventArgs e)
+        {
+            WriteEnabledGUI(Constants.FALSE_FILTER);
+        }
+
         private void WriteEnabledGUI(in PartConfigFilter filter)
         {
             //try
@@ -488,6 +505,8 @@ namespace quizer_WPF
             codeType.IsEnabled = filter.codes;
             forceLowerCase.IsEnabled = filter.lowerCase;
             wordListSeparator.IsEnabled = filter.wordListSeparator;
+
+            buttonSetDefault.IsEnabled = filter.partType && blockType.SelectedIndex != -1;
             //}
             //finally
             //{
