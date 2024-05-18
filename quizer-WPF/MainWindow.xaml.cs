@@ -32,6 +32,8 @@ namespace quizer_WPF
         private bool GUIAllDisabled;
         private static readonly char[] specialChars = ['[', '|', ']', '@'];
 
+        private DefaultConfigModel fillDefault, vocDefault, matchDefault;
+
         public MainWindow()
         {
             GUIConfigLock = true;
@@ -41,6 +43,17 @@ namespace quizer_WPF
             WriteEnabledGUI(Constants.FALSE_FILTER);
             GUIAllDisabled = true;
             inputBoxLockOnce = false;
+
+            
+            fillDefault = setFillGrid.DataContext as DefaultConfigModel;
+            vocDefault = setVocGrid.DataContext as DefaultConfigModel;
+            matchDefault = setMatchGrid.DataContext as DefaultConfigModel;
+
+            //BindingOperations.SetBinding(setFillShowIndex, ComboBox.SelectedIndexProperty, new Binding("ShowIndex") { Source = defaults });
+            //BindingOperations.SetBinding(setFillBlankFixed, ComboBox.SelectedIndexProperty, new Binding("ShowIndex") { Source = defaults });
+
+
+
             ReadSettings();
         }
 
@@ -49,6 +62,10 @@ namespace quizer_WPF
         {
             textScale.Value = Properties.Settings.Default.Zoom;
             textFont.Text = Properties.Settings.Default.TextFont;
+            
+            fillDefault.SetConfig(Interface.ReadConfig(Properties.Settings.Default.DefaultConfigFill));
+            vocDefault.SetConfig(Interface.ReadConfig(Properties.Settings.Default.DefaultConfigVoc));
+            matchDefault.SetConfig(Interface.ReadConfig(Properties.Settings.Default.DefaultConfigMatch));
         }
 
 
@@ -56,6 +73,10 @@ namespace quizer_WPF
         {
             Properties.Settings.Default.Zoom = textScale.Value;
             Properties.Settings.Default.TextFont = textFont.Text;
+
+            Properties.Settings.Default.DefaultConfigFill = Interface.WriteConfig(fillDefault.GetConfig());
+            Properties.Settings.Default.DefaultConfigVoc = Interface.WriteConfig(vocDefault.GetConfig());
+            Properties.Settings.Default.DefaultConfigMatch = Interface.WriteConfig(matchDefault.GetConfig());
 
             Properties.Settings.Default.Save();
         }

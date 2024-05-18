@@ -160,7 +160,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Settings" FontSize="14">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="-2,-2,-2,-2">
+                <ScrollViewer x:Name="setView" VerticalScrollBarVisibility="Auto" Margin="-2,-2,-2,-2">
                     <Grid Background="#FFB1D6D5" Margin="-2,-2,-2,-2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -174,7 +174,7 @@
                             <RowDefinition Height="35"/>
                             <RowDefinition Height="70"/>
                             <RowDefinition Height="35"/>
-                            <RowDefinition Height="70"/>
+                            <RowDefinition Height="140"/>
                             <RowDefinition Height="70"/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
@@ -199,11 +199,14 @@
                                 <ComboBoxItem>Times New Roman</ComboBoxItem>
                             </ComboBox>
                             <Label Content="Zoom" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="4" RenderTransformOrigin="0.861,0.549" FontSize="15" Height="30" Width="50"/>
-                            <Slider x:Name="slider" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Maximum="2" Minimum="1" Value="{Binding Value, ElementName=textScale}" LargeChange="0.25" Width="150"/>
-                            <Label Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding Value, Converter={StaticResource percentConverter}, ElementName=slider}" FontSize="15"/>
+                            <Slider x:Name="setZoom" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Maximum="2" Minimum="1" Value="{Binding Value, ElementName=textScale}" LargeChange="0.25" Width="150"/>
+                            <Label Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding Value, Converter={StaticResource percentConverter}, ElementName=setZoom}" FontSize="15"/>
                         </Grid>
                         <Label Content="Fill In The Blank" HorizontalAlignment="Left" VerticalAlignment="Center" Height="27" Padding="0,0,0,0" FontSize="18" Width="128" Grid.Row="3" Margin="38,0,0,0"/>
-                        <Grid Grid.Row="4">
+                        <Grid x:Name="setFillGrid" Grid.Row="4">
+                            <Grid.DataContext>
+                                <local:DefaultConfigModel/>
+                            </Grid.DataContext>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="20"/>
                                 <RowDefinition Height="50"/>
@@ -224,21 +227,38 @@
                             <ComboBox x:Name="setFillShowIndex" Grid.Column="1" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="25" Width="80">
                                 <ComboBoxItem>Yes</ComboBoxItem>
                                 <ComboBoxItem>No</ComboBoxItem>
+                                <ComboBox.SelectedIndex>
+                                    <Binding Path="ShowIndex" Mode="TwoWay"/>
+                                </ComboBox.SelectedIndex>
                             </ComboBox>
                             <ComboBox x:Name="setFillAlignment" Grid.Column="2" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="25" Width="80">
                                 <ComboBoxItem>Auto</ComboBoxItem>
                                 <ComboBoxItem>Left</ComboBoxItem>
+                                <ComboBoxItem IsEnabled="False">Center</ComboBoxItem>
                                 <ComboBoxItem>Right</ComboBoxItem>
+                                <ComboBox.SelectedIndex>
+                                    <Binding Path="IndexAlignment" Mode="TwoWay"/>
+                                </ComboBox.SelectedIndex>
                             </ComboBox>
-                            <TextBox x:Name="setFillBlankLength" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="25" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="3" FontSize="15"/>
+                            <TextBox x:Name="setFillBlankLength" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="25" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="3" FontSize="15">
+                                <TextBox.Text>
+                                    <Binding Path="ALength" Mode="TwoWay"/>
+                                </TextBox.Text>
+                            </TextBox>
                             <ComboBox x:Name="setFillBlankFixed" Grid.Column="4" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="25" Width="120">
                                 <ComboBoxItem>Auto</ComboBoxItem>
                                 <ComboBoxItem>Fixed</ComboBoxItem>
                                 <ComboBoxItem>Flexible</ComboBoxItem>
+                                <ComboBox.SelectedIndex>
+                                    <Binding Path="Fixed" Mode="TwoWay"/>
+                                </ComboBox.SelectedIndex>
                             </ComboBox>
                         </Grid>
                         <Label Content="Classical Spelling" HorizontalAlignment="Left" VerticalAlignment="Center" Height="27" Padding="0,0,0,0" FontSize="18" Grid.Row="5" Margin="38,0,0,0"/>
-                        <Grid Grid.Row="6">
+                        <Grid x:Name="setVocGrid" Grid.Row="6">
+                            <Grid.DataContext>
+                                <local:DefaultConfigModel/>
+                            </Grid.DataContext>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="20"/>
                                 <RowDefinition Height="50"/>
@@ -258,18 +278,37 @@
                             <ComboBox Grid.Column="1" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="25" Width="80">
                                 <ComboBoxItem>Yes</ComboBoxItem>
                                 <ComboBoxItem>No</ComboBoxItem>
+                                <ComboBox.SelectedIndex>
+                                    <Binding Path="ShowIndex" Mode="TwoWay"/>
+                                </ComboBox.SelectedIndex>
                             </ComboBox>
-                            <TextBox Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="25" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="3" FontSize="15"/>
-                            <TextBox Grid.Column="3" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="25" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="3" FontSize="15"/>
+                            <TextBox Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="25" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="3" FontSize="15">
+                                <TextBox.Text>
+                                    <Binding Path="ALength" Mode="TwoWay"/>
+                                </TextBox.Text>
+                            </TextBox>
+                            <TextBox Grid.Column="3" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="25" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="3" FontSize="15">
+                                <TextBox.Text>
+                                    <Binding Path="QLength" Mode="TwoWay"/>
+                                </TextBox.Text>
+                            </TextBox>
                             <ComboBox Grid.Column="4" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="25" Width="120">
                                 <ComboBoxItem>Auto</ComboBoxItem>
                                 <ComboBoxItem>Fixed</ComboBoxItem>
                                 <ComboBoxItem>Flexible</ComboBoxItem>
+                                <ComboBox.SelectedIndex>
+                                    <Binding Path="Fixed" Mode="TwoWay"/>
+                                </ComboBox.SelectedIndex>
                             </ComboBox>
                         </Grid>
                         <Label Content="Matching" HorizontalAlignment="Left" VerticalAlignment="Center" Height="27" Padding="0,0,0,0" FontSize="18" Grid.Row="7" Margin="38,0,0,0"/>
-                        <Grid Grid.Row="8">
+                        <Grid x:Name="setMatchGrid" Grid.Row="8">
+                            <Grid.DataContext>
+                                <local:DefaultConfigModel/>
+                            </Grid.DataContext>
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="50"/>
                                 <RowDefinition Height="20"/>
                                 <RowDefinition Height="50"/>
                             </Grid.RowDefinitions>
@@ -291,52 +330,66 @@
                             <ComboBox Grid.Column="1" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="25" Width="80">
                                 <ComboBoxItem>Yes</ComboBoxItem>
                                 <ComboBoxItem>No</ComboBoxItem>
+                                <ComboBox.SelectedIndex>
+                                    <Binding Path="ShowIndex" Mode="TwoWay"/>
+                                </ComboBox.SelectedIndex>
                             </ComboBox>
                             <ComboBox Grid.Column="2" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="25" Width="80">
                                 <ComboBoxItem>Auto</ComboBoxItem>
                                 <ComboBoxItem>Left</ComboBoxItem>
                                 <ComboBoxItem>Center</ComboBoxItem>
                                 <ComboBoxItem>Right</ComboBoxItem>
+                                <ComboBox.SelectedIndex>
+                                    <Binding Path="IndexAlignment" Mode="TwoWay"/>
+                                </ComboBox.SelectedIndex>
                             </ComboBox>
-                            <TextBox Grid.Column="3" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="25" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="3" FontSize="15"/>
+                            <TextBox Grid.Column="3" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="25" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="3" FontSize="15">
+                                <TextBox.Text>
+                                    <Binding Path="ALength" Mode="TwoWay"/>
+                                </TextBox.Text>
+                            </TextBox>
                             <ComboBox Grid.Column="4" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="25" Width="120">
                                 <ComboBoxItem>Auto</ComboBoxItem>
                                 <ComboBoxItem>Fixed</ComboBoxItem>
                                 <ComboBoxItem>Flexible</ComboBoxItem>
+                                <ComboBox.SelectedIndex>
+                                    <Binding Path="Fixed" Mode="TwoWay"/>
+                                </ComboBox.SelectedIndex>
                             </ComboBox>
                             <ComboBox Grid.Column="5" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="25" Width="80">
                                 <ComboBoxItem>Auto</ComboBoxItem>
                                 <ComboBoxItem>Yes</ComboBoxItem>
                                 <ComboBoxItem>No</ComboBoxItem>
+                                <ComboBox.SelectedIndex>
+                                    <Binding Path="LowerCase" Mode="TwoWay"/>
+                                </ComboBox.SelectedIndex>
                             </ComboBox>
-                        </Grid>
-                        <Grid Grid.Row="9">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="20"/>
-                                <RowDefinition Height="50"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="80"/>
-                                <ColumnDefinition Width="142"/>
-                                <ColumnDefinition Width="112"/>
-                                <ColumnDefinition Width="150"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Label Grid.Column="1" Content="Provide Option Code" HorizontalAlignment="Center" VerticalAlignment="Center" Height="28"/>
-                            <Label Grid.Column="2" Content="Code Type" HorizontalAlignment="Center" VerticalAlignment="Center" Height="28"/>
-                            <Label Grid.Column="3" Content="Word List Separator" HorizontalAlignment="Center" VerticalAlignment="Center" Height="28"/>
-                            <ComboBox Grid.Column="1" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="25" Width="80">
+                            
+                            <Label Grid.Column="1" Grid.Row="2" Content="Provide Option Code" HorizontalAlignment="Center" VerticalAlignment="Center" Height="28"/>
+                            <Label Grid.Column="2" Grid.Row="2" Content="Code Type" HorizontalAlignment="Center" VerticalAlignment="Center" Height="28"/>
+                            <Label Grid.Column="3" Grid.Row="2" Grid.ColumnSpan="2" Content="Word List Separator" HorizontalAlignment="Center" VerticalAlignment="Center" Height="28"/>
+                            <ComboBox Grid.Column="1" HorizontalAlignment="Center" Grid.Row="3" VerticalAlignment="Center" Height="25" Width="80">
                                 <ComboBoxItem>Auto</ComboBoxItem>
                                 <ComboBoxItem>Yes</ComboBoxItem>
                                 <ComboBoxItem>No</ComboBoxItem>
+                                <ComboBox.SelectedIndex>
+                                    <Binding Path="ProvideCode" Mode="TwoWay"/>
+                                </ComboBox.SelectedIndex>
                             </ComboBox>
-                            <ComboBox Grid.Column="2" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="25" Width="80">
+                            <ComboBox Grid.Column="2" HorizontalAlignment="Center" Grid.Row="3" VerticalAlignment="Center" Height="25" Width="80">
                                 <ComboBoxItem>Auto</ComboBoxItem>
                                 <ComboBoxItem>A-E (Combination)</ComboBoxItem>
                                 <ComboBoxItem>A-F (Combination)</ComboBoxItem>
                                 <ComboBoxItem>A-Z</ComboBoxItem>
+                                <ComboBox.SelectedIndex>
+                                    <Binding Path="Codes" Mode="TwoWay"/>
+                                </ComboBox.SelectedIndex>
                             </ComboBox>
-                            <TextBox Grid.Column="3" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Width="120" Height="25" AllowDrop="False" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" MaxLength="10" FontSize="15"/>
+                            <TextBox Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" Grid.Row="3" VerticalAlignment="Center" Width="120" Height="25" AllowDrop="False" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" MaxLength="10" FontSize="15">
+                                <TextBox.Text>
+                                    <Binding Path="Separator" Mode="TwoWay"/>
+                                </TextBox.Text>
+                            </TextBox>
                         </Grid>
                     </Grid>
                 </ScrollViewer>
