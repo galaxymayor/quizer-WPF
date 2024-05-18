@@ -137,7 +137,7 @@ namespace quizer_WPF
         }
 
 
-        private void AddBracket(TextPointer selStart, TextPointer selEnd)
+        private void AddBracket(in TextPointer selStart, in TextPointer selEnd)
         {
             TextPointer start, end, next;
             TextRange tr;
@@ -213,10 +213,15 @@ namespace quizer_WPF
                 inputBox.BeginChange();
                 inputBoxLock = true;
 
+                if(start.CompareTo(end) == 0)
+                {
+                    return;
+                }
+
                 tr = new(start, start);
                 tr.Text = "[";
                 tr.ApplyPropertyValue(ForegroundProperty, SolidBlue);
-                if (start.CompareTo(selStart) == -1 && !new TextRange(start, selStart).IsEmpty)
+                if (start.CompareTo(selStart) == -1 && !new TextRange(start, selStart).IsEmpty && selStart.CompareTo(selEnd) == -1)
                 {
                     tr = new(selStart, selStart);
                     tr.Text = "|";
@@ -225,7 +230,7 @@ namespace quizer_WPF
                 tr = new(end, end);
                 tr.Text = "]";
                 tr.ApplyPropertyValue(ForegroundProperty, SolidBlue);
-                if (end.CompareTo(selEnd) == 1 && !new TextRange(selEnd, end).IsEmpty)
+                if (end.CompareTo(selEnd) == 1 && !new TextRange(selEnd, end).IsEmpty && selStart.CompareTo(selEnd) == -1)
                 {
                     tr = new(selEnd, selEnd);
                     tr.Text = "|";
@@ -288,7 +293,12 @@ namespace quizer_WPF
             if (e.ChangedButton == MouseButton.Middle)
             {
                 TextPointer selStart = inputBox.Selection.Start, selEnd = inputBox.Selection.End;
-                if(selStart.CompareTo(selEnd)!=0)
+                if (selStart.CompareTo(selEnd) == 0)
+                {
+                    TextPointer p = inputBox.GetPositionFromPoint(e.GetPosition(inputBox), true);
+                    AddBracket(p, p);
+                }
+                else
                 {
                     AddBracket(selStart, selEnd);
                 }
@@ -299,12 +309,13 @@ namespace quizer_WPF
         {
             if(e.Key == Key.Q && (Keyboard.IsKeyDown(Key.LeftCtrl)||Keyboard.IsKeyDown(Key.RightCtrl)))
             {
-                TextPointer selStart = inputBox.Selection.Start, selEnd = inputBox.Selection.End;
-                if (selStart.CompareTo(selEnd) != 0)
-                {
-                    AddBracket(selStart, selEnd);
-                }
+                AddBracket(inputBox.Selection.Start, inputBox.Selection.End);
             }
+        }
+
+        private void AddBracketSelection(object sender, RoutedEventArgs args)
+        {
+            AddBracket(inputBox.Selection.Start, inputBox.Selection.End);
         }
 
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
