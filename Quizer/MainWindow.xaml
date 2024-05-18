@@ -1,9 +1,9 @@
-﻿<Window x:Name="mainWindow" x:Class="quizer_WPF.MainWindow"
+﻿<Window x:Name="mainWindow" x:Class="Quizer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:quizer_WPF"
+        xmlns:local="clr-namespace:Quizer"
         mc:Ignorable="d"
         Title="Quizer" Height="600" Width="1400" Closing="mainWindow_Closing" Icon="/quizer.ico" MinWidth="720" MinHeight="350" Closed="mainWindow_Closed">
     <Window.Resources>

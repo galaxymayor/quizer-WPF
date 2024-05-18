@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace quizer_WPF
+namespace Quizer
 {
     [ValueConversion(typeof(double), typeof(string))]
     public class PercentConverter : IValueConverter

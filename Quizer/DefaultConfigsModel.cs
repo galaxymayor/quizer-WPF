@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace quizer_WPF
+namespace Quizer
 {
     public class ViewModelBase : INotifyPropertyChanged
     {

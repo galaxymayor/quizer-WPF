@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
 
-namespace quizer_WPF
+namespace Quizer
 {
 
     public class PartConfig(

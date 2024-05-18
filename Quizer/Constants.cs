@@ -1,6 +1,6 @@
 ﻿/* This file provides constant values */
 
-namespace quizer_WPF
+namespace Quizer
 {
     public readonly struct Constants
     {

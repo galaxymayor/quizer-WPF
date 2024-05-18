@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace quizer_WPF
+namespace Quizer
 {
     /// <summary>
     /// Interaction logic for App.xaml
