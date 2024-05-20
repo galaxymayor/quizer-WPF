@@ -37,68 +37,89 @@
             <TabItem Header="Generate" FontSize="14">
                 <Grid Background="#FFB1D6D5" Margin="-3,-2,-3,-3">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <GroupBox Header="Controls" BorderThickness="0,0,0,0">
                         <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="60"/>
-                                <ColumnDefinition Width="78"/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="75"/>
-                                <ColumnDefinition Width="120"/>
-                                <ColumnDefinition Width="120"/>
-                                <ColumnDefinition Width="120"/>
-                                <ColumnDefinition Width="120"/>
-                                <ColumnDefinition Width="160"/>
-                                <ColumnDefinition Width="70"/>
-                                <ColumnDefinition Width="140"/>
-                                <ColumnDefinition Width="140"/>
-                                <ColumnDefinition Width="120"/>
-                                <ColumnDefinition Width="2*"/>
-                            </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="0*"/>
+                                <RowDefinition Height="60"/>
                             </Grid.RowDefinitions>
-                            <Button Style="{StaticResource RoundedBlueButton}" Content="Generate" VerticalAlignment="Center" Height="26" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" FontSize="14.5" Click="Button_Click" Margin="10,0,10,0" RenderTransformOrigin="0.5,0.5" Grid.Row="1" Grid.ColumnSpan="2"/>
-                            <Slider x:Name="textScale" VerticalAlignment="Center" Value="1.5" Minimum="1" Maximum="2" Height="18" Grid.Column="1" Margin="0,0,10,0" LargeChange="0.25"/>
-                            <Label Content="Zoom" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="46"/>
-                            <Label Grid.Column="3" Content="Block Type" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="75"/>
-                            <Label Grid.Column="3" Content="Start At" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center"/>
-                            <ComboBox x:Name="blockType" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Height="25" SelectionChanged="ConfigGUIChanged">
-                                <ComboBoxItem>Fill in the blank</ComboBoxItem>
-                                <ComboBoxItem>Matching</ComboBoxItem>
-                                <ComboBoxItem>Classical Spelling</ComboBoxItem>
-                            </ComboBox>
-                            <TextBox x:Name="startIndex" Grid.Column="4" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Width="120" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="10" Height="25" FontSize="15" TextChanged="ConfigGUIChanged"/>
-                            <CheckBox x:Name="provideCode" Grid.Column="5" Content="Provide Code" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="18" Width="103" IsChecked="{x:Null}" Checked="ConfigGUIChanged" Unchecked="ConfigGUIChanged" FontSize="14"/>
-                            <CheckBox x:Name="showIndex" Grid.Column="5" Grid.Row="1" Content="Show Index" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="18" Width="91" IsChecked="{x:Null}" Checked="ConfigGUIChanged" Unchecked="ConfigGUIChanged"/>
-                            <Label Grid.Column="6" Content="Index Alignment" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center"/>
-                            <Label Grid.Column="6" Content="Code Type" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <ComboBox x:Name="codeType" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Height="25" SelectionChanged="ConfigGUIChanged">
-                                <ComboBoxItem>A-E (Combination)</ComboBoxItem>
-                                <ComboBoxItem>A-F (Combination)</ComboBoxItem>
-                                <ComboBoxItem>A-Z</ComboBoxItem>
-                            </ComboBox>
-                            <ComboBox x:Name="indexAlignment" Grid.Column="7" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Width="120" Height="25" SelectionChanged="ConfigGUIChanged">
-                                <ComboBoxItem>Left</ComboBoxItem>
-                                <ComboBoxItem>Center</ComboBoxItem>
-                                <ComboBoxItem>Right</ComboBoxItem>
-                            </ComboBox>
-                            <Label Grid.Column="8" Content="Answer Blank Length" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <Label Grid.Column="8" Grid.Row="1" Content="Question Blank Length" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <TextBox x:Name="answerBlankLength" Grid.Column="9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="25" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="3" FontSize="15" TextChanged="ConfigGUIChanged"/>
-                            <TextBox x:Name="questionBlankLength" Grid.Column="9" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="25" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="3" FontSize="15" TextChanged="ConfigGUIChanged"/>
-                            <CheckBox x:Name="forceLowerCase" Grid.Column="10" Content="Force Lower Case" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="18" IsChecked="{x:Null}" Checked="ConfigGUIChanged" Unchecked="ConfigGUIChanged"/>
-                            <CheckBox x:Name="lengthFixed" Grid.Column="10" Grid.Row="1" Content="Length Fixed" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="18" IsChecked="{x:Null}" Checked="ConfigGUIChanged" Unchecked="ConfigGUIChanged"/>
-                            <Label Grid.Column="11" Content="Word List Separator" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <TextBox x:Name="wordListSeparator" Grid.Column="12" HorizontalAlignment="Center" Grid.Row="0" VerticalAlignment="Center" Width="120" Height="25" AllowDrop="False" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" MaxLength="10" FontSize="15" TextChanged="ConfigGUIChanged"/>
-                            <Button x:Name="buttonSetDefault" Grid.Column="11" Style="{StaticResource RoundedBlueButton}" Content="Set To Default" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="26" Width="120" FontSize="14.5" Click="buttonSetDefault_Click"/>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="78"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="0*"/>
+                                </Grid.RowDefinitions>
+                                <Button Style="{StaticResource RoundedBlueButton}" Content="Generate" VerticalAlignment="Center" Height="26" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" FontSize="14.5" Click="Button_Click" Margin="10,0,10,0" RenderTransformOrigin="0.5,0.5" Grid.Row="1" Grid.ColumnSpan="2"/>
+                                <Slider x:Name="textScale" VerticalAlignment="Center" Value="1.5" Minimum="1" Maximum="2" Height="18" Grid.Column="1" Margin="0,0,10,0" LargeChange="0.25"/>
+                                <Label Content="Zoom" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="46"/>
+                            </Grid>
+                            <ScrollViewer x:Name="GUIConfigViewer" Grid.Column="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" CanContentScroll="True" VerticalAlignment="Bottom" PreviewMouseWheel="GUIConfigViewer_PreviewMouseWheel">
+                                <Grid MinWidth="1185">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="75"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="160"/>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition Height="30"/>
+                                    </Grid.RowDefinitions>
 
+                                    <Label Grid.Column="1" Content="Block Type" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="75"/>
+                                    <Label Grid.Column="1" Content="Start At" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center"/>
+                                    <ComboBox x:Name="blockType" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Height="25" SelectionChanged="ConfigGUIChanged">
+                                        <ComboBoxItem>Fill in the blank</ComboBoxItem>
+                                        <ComboBoxItem>Matching</ComboBoxItem>
+                                        <ComboBoxItem>Classical Spelling</ComboBoxItem>
+                                    </ComboBox>
+                                    <TextBox x:Name="startIndex" Grid.Column="2" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Width="120" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="10" Height="25" FontSize="15" TextChanged="ConfigGUIChanged"/>
+                                    <CheckBox x:Name="provideCode" Grid.Column="3" Content="Provide Code" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="18" Width="103" IsChecked="{x:Null}" Checked="ConfigGUIChanged" Unchecked="ConfigGUIChanged" FontSize="14"/>
+                                    <CheckBox x:Name="showIndex" Grid.Column="3" Grid.Row="1" Content="Show Index" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="18" Width="91" IsChecked="{x:Null}" Checked="ConfigGUIChanged" Unchecked="ConfigGUIChanged"/>
+                                    <Label Grid.Column="4" Content="Index Alignment" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center"/>
+                                    <Label Grid.Column="4" Content="Code Type" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <ComboBox x:Name="codeType" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Height="25" SelectionChanged="ConfigGUIChanged">
+                                        <ComboBoxItem>A-E (Combination)</ComboBoxItem>
+                                        <ComboBoxItem>A-F (Combination)</ComboBoxItem>
+                                        <ComboBoxItem>A-Z</ComboBoxItem>
+                                    </ComboBox>
+                                    <ComboBox x:Name="indexAlignment" Grid.Column="5" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Width="120" Height="25" SelectionChanged="ConfigGUIChanged">
+                                        <ComboBoxItem>Left</ComboBoxItem>
+                                        <ComboBoxItem>Center</ComboBoxItem>
+                                        <ComboBoxItem>Right</ComboBoxItem>
+                                    </ComboBox>
+                                    <Label Grid.Column="6" Content="Answer Blank Length" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Label Grid.Column="6" Grid.Row="1" Content="Question Blank Length" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBox x:Name="answerBlankLength" Grid.Column="7" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="25" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="3" FontSize="15" TextChanged="ConfigGUIChanged"/>
+                                    <TextBox x:Name="questionBlankLength" Grid.Column="7" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="25" AllowDrop="False" PreviewTextInput="TextBox_PreviewTextInput" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" DataObject.Pasting="TextBox_Pasting" PreviewKeyDown="TextBox_PreviewKeyDown" MaxLength="3" FontSize="15" TextChanged="ConfigGUIChanged"/>
+                                    <CheckBox x:Name="forceLowerCase" Grid.Column="8" Content="Force Lower Case" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="18" IsChecked="{x:Null}" Checked="ConfigGUIChanged" Unchecked="ConfigGUIChanged"/>
+                                    <CheckBox x:Name="lengthFixed" Grid.Column="8" Grid.Row="1" Content="Length Fixed" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="18" IsChecked="{x:Null}" Checked="ConfigGUIChanged" Unchecked="ConfigGUIChanged"/>
+                                    <Label Grid.Column="9" Content="Word List Separator" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBox x:Name="wordListSeparator" Grid.Column="10" HorizontalAlignment="Center" Grid.Row="0" VerticalAlignment="Center" Width="120" Height="25" AllowDrop="False" PreviewMouseRightButtonUp="TextBox_PreviewMouseRightButtonUp" MaxLength="10" FontSize="15" TextChanged="ConfigGUIChanged"/>
+                                    <Button x:Name="buttonSetDefault" Grid.Column="9" Style="{StaticResource RoundedBlueButton}" Content="Set To Default" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="26" Width="120" FontSize="14.5" Click="buttonSetDefault_Click"/>
+                                </Grid>
+                            </ScrollViewer>
                         </Grid>
+
                     </GroupBox>
                     <Grid Background="#FFE5E5E5" Margin="0,0,0,0" Grid.Row="1">
                         <Grid.RowDefinitions>

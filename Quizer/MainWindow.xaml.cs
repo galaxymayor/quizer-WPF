@@ -51,8 +51,34 @@ namespace Quizer
 
 
             ReadSettings();
+
+            DataObject.AddPastingHandler(inputBox, inputBox_Pasting);
+            DataObject.AddPastingHandler(questionBox, QABox_Pasting);
+            DataObject.AddPastingHandler(answersBox, QABox_Pasting);
         }
 
+        private void inputBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            TextRange tr = new(inputBox.Selection.Start, inputBox.Selection.End);
+            inputBoxLock = true;
+            tr.Text = (string)e.DataObject.GetData(DataFormats.UnicodeText);
+            inputBoxLock = false;
+            Highlight(tr.Start, tr.End);
+            e.CancelCommand();
+            inputBoxLockOnce = true;
+
+            inputBox.Selection.Select(tr.End, tr.End);
+        }
+
+
+        private void QABox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            TextRange tr = new(((RichTextBox)sender).Selection.Start,((RichTextBox)sender).Selection.End);
+            tr.Text = (string)e.DataObject.GetData(DataFormats.UnicodeText);
+            e.CancelCommand();
+
+            ((RichTextBox)sender).Selection.Select(tr.End, tr.End);
+        }
 
         private void ReadSettings()
         {
@@ -91,6 +117,10 @@ namespace Quizer
                 inputBoxLock = true;
                 TextPointer idx = start;
                 TextRange toMark = new(start, end);
+                if (toMark.IsEmpty)
+                {
+                    return;
+                }
                 toMark.ClearAllProperties();
                 while (idx.CompareTo(end) == -1)
                 {
@@ -498,6 +528,20 @@ namespace Quizer
         private void OtherBoxesFocused(object sender, RoutedEventArgs e)
         {
             WriteEnabledGUI(Constants.FALSE_FILTER);
+        }
+
+        private void GUIConfigViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            ScrollViewer scrollViewer = (ScrollViewer)sender;
+            if (e.Delta < 0)
+            {
+                scrollViewer.LineRight();
+            }
+            else
+            {
+                scrollViewer.LineLeft();
+            }
+            e.Handled = true;
         }
 
         private void WriteEnabledGUI(in PartConfigFilter filter)
