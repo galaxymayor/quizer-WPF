@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Quizer"
         mc:Ignorable="d"
+        FontFamily="SegoeUI"
         Title="Quizer" Height="600" Width="1400" Closing="mainWindow_Closing" Icon="/quizer.ico" MinWidth="720" MinHeight="350" Closed="mainWindow_Closed">
     <Window.Resources>
         <local:PercentConverter x:Key="percentConverter"/>
