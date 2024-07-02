@@ -137,7 +137,7 @@ namespace Quizer
                 config.underscoreLength :
                 Math.Max(
                     config.underscoreLength,
-                    groups[1].Length + groups[2].Length + groups[3].Length + 2
+                    groups[1].Length + groups[2].Length + groups[3].Length + 4
                 );
             return string.Join("",
                 lqi,
@@ -215,12 +215,12 @@ namespace Quizer
 
         public override Tuple<string, List<string>> Produce()
         {
-            int vl = config.underscoreLengthFixed ? config.underscoreLength : longest_v_len + 2;
+            int vl = config.underscoreLengthFixed ? config.underscoreLength : longest_v_len + 4;
             int bl = config.underscoreInSentenceLength;
             int first_idx = config.index + 1;
             int question_count = ans.Count;
             int last_idx = first_idx + question_count - 1;
-            int qi_len = last_idx.ToString().Length + 2;
+            int qi_len = last_idx.ToString().Length + 4;
             string qi_alignment_format = $"{{0,-{qi_len}}}";
             Func<int, string> qif =
                 config.markQuestionNumber ?
@@ -303,7 +303,7 @@ namespace Quizer
             }
             int vl = config.underscoreLengthFixed || label ?
                 config.underscoreLength :
-                Math.Max(config.underscoreLength, longest + 2);
+                Math.Max(config.underscoreLength, longest + 4);
             (string l_us, string r_us) = config.questionNumberAlignment switch
             {
                 '>' => (new string('_', vl), ""),
